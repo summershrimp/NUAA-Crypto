@@ -1,6 +1,20 @@
 #ifndef _AES_H_
 #define _AES_H_
 
+ifdef _MSC_VER
+#ifndef uint8_t
+typedef unsigned __int8 uint8_t;
+#endif
+#ifndef uint32_t
+typedef unsigned __int32 uint32_t;
+#endif
+#ifndef uint64_t
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+#endif
+#else
+#include <stdint.h>
+#endif
 
 const char SBOX[16][16] = 
 {
@@ -42,18 +56,23 @@ const char REVBOX[16][16] =
     {0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d } 
 };
 
-int Nb=4;
-int Nk,Nr;
+int Nb=4;// bytes per subgroup
+int Nk,Nr;// key bytes & round
 
 char gmult(char a, char b);
 int GF28_Mul(char * a, char* b, char* d);
 int SubBytes(char *state);
 int ShiftRows(char *state);
 int MixColumns(char *state);
+int RevSubBytes(char *state);
+int RevShiftRows(char *state);
+int RevMixColumns(char *state);
 int AddRoundKey(char *state, char *key, int rnd);
 void rot_word(char *w);
 void sub_word(char *w);
 void KeyExpansion(char *key, char *w) ;
 
+int AESDecrypt(char *src, char *dst, int length, int *rength, char *key, int keylength);
+int AESEncrypt(char *src, char *dst, int length, int *rength, char *key, int keylength);
 
 #endif
