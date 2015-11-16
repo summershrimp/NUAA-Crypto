@@ -28,6 +28,7 @@
 *.app
 
 # Directories
-/obj
-/bin
+obj/
+bin/
+.dSYM/
 
