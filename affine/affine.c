@@ -10,29 +10,24 @@ unsigned char prime[26] =
 	0
 };
 
-int StatWords(char in[], int count, float out[])
+int StatWords(char in[], int count, int out[], int *wcount)
 {
-	int i,cw=0,t;
-	int cc[26] = {0};
+	int i,t;
 	for (i=0; i<count; ++i)
 	{
 		t=in[i];
 		if(t >= 'A' && t <= 'Z')
 		{
 			t -= 'A';
-			++cw;
-			++cc[t];
+			++(*wcount);
+			++out[t];
 		}
 		else if (t >= 'a' && t <= 'z')
 		{
 			t -= 'a';
-			++cw;
-			++cc[t];
+			++(*wcount);
+			++out[t];
 		}
-	}
-	for(i=0; i<26; ++i)
-	{
-		out[i] = ((float) cc[i] )/(float)cw;
 	}
 	return 0;
 }
@@ -107,7 +102,7 @@ char enc(char in, int k1, int k2)
 		in = (k1+in*k2)%26;
 		return in + 'a';
 	}
-	return -1;
+	return in;
 }
 
 char dec(char in, int k1, int k2)
@@ -132,7 +127,7 @@ char dec(char in, int k1, int k2)
 		}
 		return in + 'a';
 	}
-	return -1;
+	return in;
 }
 
 int AffineEncrypt(char in[], unsigned int count, char out[], int key1, int key2)

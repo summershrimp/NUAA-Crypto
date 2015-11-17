@@ -13,7 +13,6 @@ int main(int argc, char *argv[])
 	uint8_t buf[1024], out[1024];
 	char outname[256];
 	uint8_t hash[32];
-	sha256_context ctx;
 	FILE *fin, *fout;
 
 	int in_count, out_count, real_out;
@@ -61,13 +60,13 @@ int main(int argc, char *argv[])
 		if(argv[i][0]!='-')
 		{
 			skey2 = argv[i];
-			sscanf(skey2, "%d", &key1);
+			sscanf(skey2, "%d", &key2);
 			break;
 		}
 	}
-	if (!filename || key 1<= 0 || key2 <= 0)
+	if (!filename || key1 <= 0 || key2 <= 0)
 	{
-		printf ("Usage: %s [args] filename key1 key2 [--stat]\nkey1, key2 must be number\nkey2 must be prime after mod 26",argv[0]);
+		printf ("Usage: %s [args] filename key1 key2 [--stat]\nkey1, key2 must be number\nkey2 must be prime after mod 26\n",argv[0]);
 		return 1;
 	}
 	if(!encrypt^decrypt)
@@ -108,7 +107,7 @@ int main(int argc, char *argv[])
     {
     	while(in_count = fread(buf, 1, 512, fin))
     	{
-    		if(AESDecrypt(buf, in_count, out, key1, key2)
+    		if(AffineDecrypt(buf, in_count, out, key1, key2))
     		{
     			printf("decrypt error!\n");
     			return 1;
@@ -122,7 +121,7 @@ int main(int argc, char *argv[])
     	}
     }
     FILE *fraw, *fenc;
-    float statraw[26] = {0.0}, statenc[26] = {0.0};
+    int statw[26] = {0}, statall;
     if(stat)
     {
     	if(encrypt)
@@ -135,12 +134,40 @@ int main(int argc, char *argv[])
     		fraw = fout;
     		fenc = fin;
     	}
-    	fseek(fraw, 0, SEEK_SET)
-   		fseek(fenc, 0, SEEK_SET)
+    	fseek(fraw, 0, SEEK_SET);
+   		fseek(fenc, 0, SEEK_SET);
     	while(in_count = fread(buf, 1, 512, fraw))
     	{
-    		
+    		StatWords(buf, in_count, statw, &statall);
     	}
+        printf("Statistic for unencrypted words:\n");
+        for(i=0; i<26; i++)
+        {
+            printf("%3c: %4.2f%%", i + 'A', statw[i]*100/(float)statall);
+            if((i+1)%4 == 0)
+            {
+                printf("\n");
+            }
+        }
+        printf("\n");
+        for(i=0; i<26; i++)
+        {
+            statw[i] = 0;
+        }
+        while(in_count = fread(buf, 1, 512, fenc))
+        {
+            StatWords(buf, in_count, statw, &statall);
+        }
+        printf("Statistic for encrypted words:\n");
+        for(i=0; i<26; i++)
+        {
+            printf("%3c: %4.2f%%", i + 'A', statw[i]*100/(float)statall);
+            if((i+1)%4 == 0)
+            {
+                printf("\n");
+            }
+        }
+        printf("\n");
     }
 
     fclose(fin);
