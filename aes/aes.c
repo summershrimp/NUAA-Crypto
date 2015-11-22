@@ -399,8 +399,8 @@ int AESDecrypt(uint8_t *src, uint8_t *dst, int length, int *rlength, uint8_t *ke
     {
         self_decrypt(src+i, dst+i, w);
     }
-    nop = dst[length];
-    for(i=length - nop - 1; i<length; ++i)
+    nop = dst[length - 1];
+    for(i=length - nop; i<length; ++i)
     {
         if(dst[i]!=nop)
         {
