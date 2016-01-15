@@ -32,3 +32,11 @@ obj/
 bin/
 .dSYM/
 
+# Word file
+.doc
+.docx
+.xls
+.xlsx
+.ppt
+.pptx
+
